@@ -92,7 +92,7 @@ class FlashInferBackend(BaseAttnBackend):
         self.prefill_wrapper = BatchPrefillWithPagedKVCacheWrapper(
             self.float_workspace_buffer,
             kv_layout="NHD",
-            backend="fa3",
+            backend="auto",
         )
         self.decode_wrappers = BatchDecodeWithPagedKVCacheWrapper(
             self.float_workspace_buffer, kv_layout="NHD"
