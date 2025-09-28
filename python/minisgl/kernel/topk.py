@@ -20,3 +20,16 @@ def fast_topk(
     lengths: torch.Tensor,
 ) -> torch.Tensor:
     return _load_topk_module().fast_topk(score, indices, lengths)
+
+
+def fast_topk_transform(
+    score: torch.Tensor,
+    indices: torch.Tensor,
+    lengths: torch.Tensor,
+    dst_page_table: torch.Tensor,
+    src_page_table: torch.Tensor,
+    cu_seqlens: torch.Tensor,
+) -> torch.Tensor:
+    return _load_topk_module().fast_topk_transform(
+        score, indices, lengths, dst_page_table, src_page_table, cu_seqlens
+    )
