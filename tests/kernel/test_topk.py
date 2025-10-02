@@ -28,8 +28,8 @@ def _torch_topk(
 @call_if_main(__name__)
 def test_fast_topk():
     torch.manual_seed(0)
-    B = 32
-    clip = 2000
+    B = 100
+    clip = 16384
     stream = torch.cuda.Stream()
     torch.cuda.set_stream(stream)
     score = torch.randn(B, 100000, dtype=torch.float32, device="cuda")
@@ -46,9 +46,12 @@ def test_fast_topk():
     answer_cpu = answer.cpu().tolist()
 
     for i in range(B):
-        diff = set(indice_cpu[i]) - set(answer_cpu[i])
-        if len(diff) > 0:
-            print(f"row {i} has {len(diff)} different: {diff}")
+        more = set(indice_cpu[i]) - set(answer_cpu[i])
+        less = set(answer_cpu[i]) - set(indice_cpu[i])
+        if len(more) > 0 or len(less) > 0:
+            print(f"Row {i} differs:")
+            print(f"  more: {more}")
+            print(f"  less: {less}")
 
     # test performance
     tic = torch.cuda.Event(enable_timing=True)
@@ -91,7 +94,3 @@ def test_fast_topk_transform():
         src_page_table=src_page_table,
         cu_seqlens=cu_seqlens,
     )
-
-    # sort indices by last dimension
-    # find the pos where -2 is in indices
-    answer = torch.topk(score[:, :clip], 2048, dim=-1, sorted=False).indices.sort(dim=-1).values
