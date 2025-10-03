@@ -28,11 +28,12 @@ def _torch_topk(
 @call_if_main(__name__)
 def test_fast_topk():
     torch.manual_seed(0)
-    B = 100
+    B = 132
     clip = 16384
     stream = torch.cuda.Stream()
     torch.cuda.set_stream(stream)
     score = torch.randn(B, 100000, dtype=torch.float32, device="cuda")
+    score *= pow(2.0, 15)
     indices = torch.full((B, 2048), -2, dtype=torch.int32, device="cuda")
     lengths = torch.full((B,), clip, dtype=torch.int32, device="cuda")
     fast_topk(score, indices, lengths)
@@ -52,6 +53,10 @@ def test_fast_topk():
             print(f"Row {i} differs:")
             print(f"  more: {more}")
             print(f"  less: {less}")
+            # print the more values
+            source = score[i].cpu()
+            print(f"  more values: {[source[j].item() for j in more if j >= 0]}")
+            print(f"  less values: {[source[j].item() for j in less if j >= 0]}")
 
     # test performance
     tic = torch.cuda.Event(enable_timing=True)

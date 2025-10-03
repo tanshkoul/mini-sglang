@@ -18,9 +18,8 @@ def fast_topk(
     score: torch.Tensor,
     indices: torch.Tensor,
     lengths: torch.Tensor,
-    use_tilelang: bool = True,
 ) -> torch.Tensor:
-    return _load_topk_module().fast_topk(score, indices, lengths, use_tilelang)
+    return _load_topk_module().fast_topk(score, indices, lengths)
 
 
 def fast_topk_transform(
@@ -29,8 +28,7 @@ def fast_topk_transform(
     dst_page_table: torch.Tensor,
     src_page_table: torch.Tensor,
     cu_seqlens: torch.Tensor,
-    use_tilelang: bool = True,
 ) -> torch.Tensor:
     return _load_topk_module().fast_topk_transform(
-        score, lengths, dst_page_table, src_page_table, cu_seqlens, use_tilelang
+        score, lengths, dst_page_table, src_page_table, cu_seqlens
     )
